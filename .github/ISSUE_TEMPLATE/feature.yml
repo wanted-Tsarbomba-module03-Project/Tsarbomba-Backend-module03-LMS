@@ -1,8 +1,6 @@
 name: "✨ New Feature"
 description: 기능 추가 및 구현 작업용 이슈 템플릿입니다.
-
-
-
+body:
   - type: textarea
     id: goal
     attributes:
