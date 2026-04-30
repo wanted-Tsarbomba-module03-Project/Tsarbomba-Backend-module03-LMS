@@ -27,7 +27,7 @@ body:
     validations:
       required: true
 
-- type: textarea
+  - type: textarea
     id: checklist
     attributes:
       label: 수정 체크리스트
