@@ -15,7 +15,7 @@ body:
     id: description
     attributes:
       label: 🐞버그 설명
-placeholder: "예시: 학생 계정으로 과제 제출 버튼을 눌렀을 때, 내용이 비어 있어도 제출이 완료됩니다."
+      placeholder: "예시: 학생 계정으로 과제 제출 버튼을 눌렀을 때, 내용이 비어 있어도 제출이 완료됩니다."
     validations:
       required: true
 
