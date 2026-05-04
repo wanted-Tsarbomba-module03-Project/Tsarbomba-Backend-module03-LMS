@@ -29,7 +29,7 @@ body:
   - type: textarea
     id: expected_outcome
     attributes:
-      label: 🎯 목표 및 기대 결과 (Expected Outcome)
+      label: 🎯 댓글 양식
       description: 이 이슈가 완료되었을 때 댓글로 남길 구체적인 결과물을 적어주세요.
       placeholder: 예시) 강의 CRUD API 명세 완료 Notion 링크
     validations:
