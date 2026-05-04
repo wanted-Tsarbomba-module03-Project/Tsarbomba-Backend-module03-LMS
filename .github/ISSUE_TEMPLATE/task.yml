@@ -16,8 +16,8 @@ body:
     id: expected_outcome
     attributes:
       label: 🎯 목표 및 기대 결과 (Expected Outcome)
-      description: 이 이슈가 완료되었을 때 달성해야 하는 구체적인 결과물을 적어주세요.
-      placeholder: 예시) 강의 CRUD API 명세 완료 및 팀 내 공유
+      description: 이 이슈가 완료되었을 때 댓글에 태그하거나, 달성해야 하는 구체적인 결과물을 적어주세요.
+      placeholder: 예시) 강의 CRUD API 명세 완료 및 해당 노션 링크 태그
     validations:
       required: true
 
