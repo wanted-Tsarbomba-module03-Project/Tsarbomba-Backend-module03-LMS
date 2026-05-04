@@ -1,4 +1,4 @@
-name: Task
+name: 📒 Task
 description: 프로젝트 진행을 위한 일반적인 업무 및 태스크를 생성합니다.
 title: "[TASK] "
 labels: ["Type: Task"]
