@@ -36,13 +36,13 @@ body:
       required: true
 
   - type: textarea
-      id: action_items
-      attributes:
-        label: ✅ 액션 아이템 (Action Items)
-        description: 구체적으로 수행해야 할 작업 목록을 자유롭게 작성해주세요.
-        placeholder: "예시: \n1. 도메인 분석\n2. API 명세서 작성\n3. 팀 내 공유"
-      validations:
-        required: true
+    id: action_items
+    attributes:
+      label: ✅ 액션 아이템 (Action Items)
+      description: 구체적으로 수행해야 할 작업 목록을 자유롭게 작성해주세요.
+      placeholder: "예시: \n1. 도메인 분석\n2. API 명세서 작성\n3. 팀 내 공유"
+    validations:
+      required: true
 
   - type: input
     id: due_date
