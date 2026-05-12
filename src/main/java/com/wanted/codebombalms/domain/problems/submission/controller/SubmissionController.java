@@ -1,0 +1,29 @@
+package com.wanted.codebombalms.domain.problems.submission.controller;
+
+import com.wanted.codebombalms.domain.problems.submission.dto.request.SubmissionRequest;
+import com.wanted.codebombalms.domain.problems.submission.dto.response.SubmissionResponse;
+import com.wanted.codebombalms.domain.problems.submission.service.SubmissionService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class SubmissionController {
+    private final SubmissionService submissionService;
+
+    public SubmissionController(SubmissionService submissionService) {
+        this.submissionService = submissionService;
+    }
+
+    @PostMapping("/api/v1/problems/{id}/submissions")
+    public ResponseEntity<SubmissionResponse> submitAnswer(
+            @PathVariable Long id,
+            @RequestBody SubmissionRequest request
+    ) {
+        SubmissionResponse response = submissionService.submitAnswer(id, request);
+
+        return ResponseEntity.ok(response);
+    }
+}
