@@ -155,7 +155,6 @@
             display: flex;
             align-items: center;
             padding: 0 16px;
-            border: 1px solid #111827;
             border-radius: 6px;
             margin-bottom: 9px;
             background: #ffffff;
@@ -164,17 +163,8 @@
         }
 
         .problem-state.selected {
-            border-color: var(--primary);
-            background: var(--primary);
+            background: #15165a;
             color: #ffffff;
-        }
-
-        .problem-state.locked {
-            background: #d6d7d9;
-        }
-
-        .problem-state.correct {
-            background: #b9c7f0;
         }
 
         .workspace {
@@ -226,12 +216,26 @@
             padding: 26px 22px;
         }
 
+        .answer-input {
+            width: 100%;
+            height: 280px;
+            margin-top: 28px;
+            padding: 18px;
+            border: 1px solid #d9dde5;
+            border-radius: 8px;
+            resize: none;
+            outline: none;
+            font-size: 17px;
+            line-height: 1.6;
+            font-family: inherit;
+        }
+
         .hint-bar {
             height: 68px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 334px;
+            margin-top: 24px;
             border: 1px solid #d9dde5;
             border-radius: 8px;
             background: var(--soft);
@@ -264,6 +268,7 @@
         .result-body {
             min-height: 274px;
             padding: 22px;
+            white-space: pre-wrap;
         }
 
         .submit-bottom {
@@ -288,7 +293,7 @@
 
         .modal {
             width: 480px;
-            height: 348px;
+            min-height: 348px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -367,9 +372,8 @@
         <h1>전체 문제 n/m</h1>
         <div class="problem-state selected"
              th:text="'문제 ' + ${problemSet.currentProblemNumber}">문제 1</div>
-        <div class="problem-state">열린 문제</div>
-        <div class="problem-state locked">안 열린 문제</div>
-        <div class="problem-state correct">맞춘 문제</div>
+        <div class="problem-state">문제 2</div>
+        <div class="problem-state">문제 3</div>
     </aside>
 
     <section class="workspace">
@@ -386,17 +390,20 @@
         <section class="answer-area">
             <article class="card solution-card">
                 <h2>문제풀이영역</h2>
+                <textarea class="answer-input"
+                          id="submittedAnswer"
+                          placeholder="답안을 입력하세요."></textarea>
                 <div class="hint-bar">힌트를 확인할 수 있습니다.</div>
             </article>
 
             <article class="card result-card">
-                <div class="tabs" role="tablist" aria-label="문제 풀이 보조 탭">
+                <div class="tabs" role="tablist" aria-label="문제 풀이 보조 영역">
                     <button class="tab" type="button">실행결과</button>
                     <button class="tab" type="button">힌트</button>
                     <button class="tab" type="button">강의보기</button>
                     <span></span>
                 </div>
-                <div class="result-body"></div>
+                <div class="result-body" id="resultBody"></div>
                 <button class="primary-button submit-bottom" type="button" id="openSubmitModal">제출하기</button>
             </article>
         </section>
@@ -414,11 +421,17 @@
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
+    const problemSetId = /*[[${problemSet.problemSetId}]]*/ 1;
+    const problemId = /*[[${problemSet.problemId}]]*/ 1;
+    const userId = 1;
+
     const modal = document.getElementById("submitModal");
     const openButton = document.getElementById("openSubmitModal");
     const closeButton = document.getElementById("closeSubmitModal");
     const confirmButton = document.getElementById("confirmSubmit");
+    const answerInput = document.getElementById("submittedAnswer");
+    const resultBody = document.getElementById("resultBody");
 
     function openModal() {
         modal.classList.add("open");
@@ -432,7 +445,57 @@
 
     openButton.addEventListener("click", openModal);
     closeButton.addEventListener("click", closeModal);
-    confirmButton.addEventListener("click", closeModal);
+    async function submitAnswer() {
+        const submittedAnswer = answerInput.value;
+
+        if (submittedAnswer === "") {
+            resultBody.textContent = "답안을 입력해주세요.";
+            closeModal();
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/v1/problems/${problemId}/submissions`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    submittedAnswer: submittedAnswer
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                resultBody.textContent = "제출 중 오류가 발생했습니다.";
+                closeModal();
+                return;
+            }
+
+            const isCorrect = result.correct ?? result.isCorrect;
+            const attemptNo = result.attemptNo ?? "-";
+            const remainingAttemptCount = result.remainingAttemptCount ?? 0;
+            const canRetry = result.canRetry ?? false;
+            const nextProblemId = result.nextProblemId;
+            const isProblemSetCompleted = result.problemSetCompleted ?? result.isProblemSetCompleted ?? false;
+
+            resultBody.textContent =
+                (isCorrect ? "정답입니다." : "오답입니다.") +
+                `\n시도 횟수: ${attemptNo}` +
+                `\n남은 제출 횟수: ${remainingAttemptCount}` +
+                `\n재시도 가능 여부: ${canRetry ? "가능" : "불가능"}` +
+                (nextProblemId ? `\n다음 문제 ID: ${nextProblemId}` : "") +
+                `\n문제 세트 완료 여부: ${isProblemSetCompleted ? "완료" : "진행 중"}`;
+        } catch (error) {
+            resultBody.textContent = "서버와 통신할 수 없습니다.";
+        }
+
+        closeModal();
+    }
+
+    confirmButton.addEventListener("click", submitAnswer);
     modal.addEventListener("click", (event) => {
         if (event.target === modal) {
             closeModal();
