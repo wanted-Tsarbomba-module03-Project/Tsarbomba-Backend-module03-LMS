@@ -1,1 +1,5 @@
-spring.application.name=Code-Bomba-LMS
+spring:
+  application:
+    name: Code-Bomba-LMS
+  profiles:
+    active: local
