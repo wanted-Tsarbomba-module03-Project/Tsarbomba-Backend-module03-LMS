@@ -1,5 +1,7 @@
 package com.wanted.codebombalms.domain.problems.progress.controller;
 
+import com.wanted.codebombalms.domain.problems.progress.dto.response.ProblemProgressResponse;
+import com.wanted.codebombalms.domain.problems.progress.service.ProgressService;
 import com.wanted.codebombalms.domain.problems.set.dto.response.SetEnterResponse;
 import com.wanted.codebombalms.domain.problems.set.service.ProblemSetService;
 import org.springframework.stereotype.Controller;
@@ -12,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ProgressController {
 
     private final ProblemSetService problemSetService;
+    private final ProgressService progressService;
 
-    public ProgressController(ProblemSetService problemSetService) {
+    public ProgressController(ProblemSetService problemSetService, ProgressService progressService) {
         this.problemSetService = problemSetService;
+        this.progressService = progressService;
     }
 
     @GetMapping("/problem/sets/{problemSetId}")
@@ -25,8 +29,11 @@ public class ProgressController {
     ) {
         SetEnterResponse response =
                 problemSetService.enterProblemSet(problemSetId, userId);
+        ProblemProgressResponse progress =
+                progressService.findProblemSetProgress(problemSetId, userId);
 
         model.addAttribute("problemSet", response);
+        model.addAttribute("progress", progress);
 
         return "problem/solve";
     }

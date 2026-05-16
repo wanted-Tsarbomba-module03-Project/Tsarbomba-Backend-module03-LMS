@@ -30,6 +30,11 @@
             cursor: pointer;
         }
 
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+        }
+
         .topbar {
             height: 56px;
             display: grid;
@@ -72,13 +77,12 @@
         .search {
             width: min(672px, 100%);
             justify-self: center;
-            position: relative;
         }
 
         .search input {
             width: 100%;
             height: 40px;
-            padding: 0 48px 0 20px;
+            padding: 0 20px;
             border: 1px solid #d9dde5;
             border-radius: 8px;
             font-size: 16px;
@@ -231,6 +235,7 @@
         }
 
         .hint-bar {
+            width: 100%;
             height: 68px;
             display: flex;
             align-items: center;
@@ -239,6 +244,7 @@
             border: 1px solid #d9dde5;
             border-radius: 8px;
             background: var(--soft);
+            color: var(--text);
             font-size: 20px;
             font-weight: 800;
         }
@@ -369,22 +375,24 @@
 
 <main class="layout">
     <aside class="sidebar">
-        <h1>전체 문제 n/m</h1>
+        <h1 th:text="'전체 문제 ' + ${progress.solvedProblemCount} + '/' + ${progress.totalProblemCount}">
+            전체 문제 0/0
+        </h1>
         <div class="problem-state selected"
              th:text="'문제 ' + ${problemSet.currentProblemNumber}">문제 1</div>
-        <div class="problem-state">문제 2</div>
-        <div class="problem-state">문제 3</div>
     </aside>
 
     <section class="workspace">
         <article class="card problem-card">
-            <h2 th:text="${problemSet.problemTitle}">문제 제목</h2>
-            <div class="problem-meta">
-                <span th:text="'문제 유형: ' + ${problemSet.problemType}">문제 유형</span>
-                <span th:text="' | 문제 ID: ' + ${problemSet.problemId}"> | 문제 ID</span>
+            <h2 th:text="${problemSet.problem != null ? problemSet.problem.title : '문제 세트 완료'}">문제 제목</h2>
+            <div class="problem-meta" th:if="${problemSet.problem != null}">
+                <span th:text="'문제 유형: ' + ${problemSet.problem.problemType}">문제 유형</span>
+                <span th:text="' | 문제 ID: ' + ${problemSet.problem.problemId}"> | 문제 ID</span>
             </div>
             <p class="problem-content"
-               th:text="${problemSet.problemContent}">문제 내용이 들어갑니다.</p>
+               th:text="${problemSet.problem != null ? problemSet.problem.content : '모든 문제 풀이가 완료되었습니다.'}">
+                문제 내용이 들어갑니다.
+            </p>
         </article>
 
         <section class="answer-area">
@@ -392,19 +400,25 @@
                 <h2>문제풀이영역</h2>
                 <textarea class="answer-input"
                           id="submittedAnswer"
-                          placeholder="답안을 입력하세요."></textarea>
-                <div class="hint-bar">힌트를 확인할 수 있습니다.</div>
+                          placeholder="답안을 입력하세요."
+                          th:disabled="${problemSet.isCompleted}"></textarea>
+                <button class="hint-bar" type="button" id="hintButton">힌트를 확인할 수 있습니다.</button>
             </article>
 
             <article class="card result-card">
                 <div class="tabs" role="tablist" aria-label="문제 풀이 보조 영역">
                     <button class="tab" type="button">실행결과</button>
-                    <button class="tab" type="button">힌트</button>
-                    <button class="tab" type="button">강의보기</button>
+                    <button class="tab" type="button" id="hintTabButton">힌트</button>
+                    <button class="tab" type="button" id="solutionButton" disabled>풀이보기</button>
                     <span></span>
                 </div>
-                <div class="result-body" id="resultBody"></div>
-                <button class="primary-button submit-bottom" type="button" id="openSubmitModal">제출하기</button>
+                <div class="result-body"
+                     id="resultBody"
+                     th:text="${problemSet.isCompleted ? '모든 문제를 다 풀었습니다.' : ''}"></div>
+                <button class="primary-button submit-bottom"
+                        type="button"
+                        id="openSubmitModal"
+                        th:text="${problemSet.isCompleted ? '완료' : '제출하기'}">제출하기</button>
             </article>
         </section>
     </section>
@@ -423,7 +437,8 @@
 
 <script th:inline="javascript">
     const problemSetId = /*[[${problemSet.problemSetId}]]*/ 1;
-    const problemId = /*[[${problemSet.problemId}]]*/ 1;
+    const problemId = /*[[${problemSet.problem != null ? problemSet.problem.problemId : null}]]*/ null;
+    const isCompleted = /*[[${problemSet.isCompleted}]]*/ false;
     const userId = 1;
 
     const modal = document.getElementById("submitModal");
@@ -432,6 +447,39 @@
     const confirmButton = document.getElementById("confirmSubmit");
     const answerInput = document.getElementById("submittedAnswer");
     const resultBody = document.getElementById("resultBody");
+    const solutionButton = document.getElementById("solutionButton");
+    const hintButton = document.getElementById("hintButton");
+    const hintTabButton = document.getElementById("hintTabButton");
+    let nextProblemUrl = null;
+    let solutionExplanation = "";
+
+    async function showHint() {
+        if (!problemId) {
+            resultBody.textContent = "현재 조회할 힌트가 없습니다.";
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/v1/problems/${problemId}/hints`);
+            const hints = await response.json();
+
+            if (!response.ok) {
+                resultBody.textContent = "힌트를 불러오지 못했습니다.";
+                return;
+            }
+
+            if (hints.length === 0) {
+                resultBody.textContent = "등록된 힌트가 없습니다.";
+                return;
+            }
+
+            resultBody.textContent = hints
+                .map(hint => `${hint.hintOrder}. ${hint.hintContent}`)
+                .join("\n\n");
+        } catch (error) {
+            resultBody.textContent = "힌트를 불러오지 못했습니다.";
+        }
+    }
 
     function openModal() {
         modal.classList.add("open");
@@ -443,8 +491,36 @@
         modal.setAttribute("aria-hidden", "true");
     }
 
-    openButton.addEventListener("click", openModal);
+    openButton.addEventListener("click", () => {
+        if (nextProblemUrl) {
+            window.location.href = nextProblemUrl;
+            return;
+        }
+
+        if (isCompleted) {
+            window.location.href = "/problem";
+            return;
+        }
+
+        if (!problemId) {
+            return;
+        }
+
+        openModal();
+    });
+
     closeButton.addEventListener("click", closeModal);
+    hintButton.addEventListener("click", showHint);
+    hintTabButton.addEventListener("click", showHint);
+
+    solutionButton.addEventListener("click", () => {
+        if (solutionButton.disabled) {
+            return;
+        }
+
+        resultBody.textContent = solutionExplanation || "등록된 풀이가 없습니다.";
+    });
+
     async function submitAnswer() {
         const submittedAnswer = answerInput.value;
 
@@ -480,6 +556,7 @@
             const canRetry = result.canRetry ?? false;
             const nextProblemId = result.nextProblemId;
             const isProblemSetCompleted = result.problemSetCompleted ?? result.isProblemSetCompleted ?? false;
+            const explanation = result.explanation ?? "";
 
             resultBody.textContent =
                 (isCorrect ? "정답입니다." : "오답입니다.") +
@@ -488,6 +565,19 @@
                 `\n재시도 가능 여부: ${canRetry ? "가능" : "불가능"}` +
                 (nextProblemId ? `\n다음 문제 ID: ${nextProblemId}` : "") +
                 `\n문제 세트 완료 여부: ${isProblemSetCompleted ? "완료" : "진행 중"}`;
+
+            if (isCorrect) {
+                solutionExplanation = explanation;
+                solutionButton.disabled = false;
+
+                if (nextProblemId && !isProblemSetCompleted) {
+                    nextProblemUrl = `/problem/sets/${problemSetId}?userId=${userId}`;
+                    openButton.textContent = "다음 문제";
+                } else {
+                    openButton.textContent = "완료";
+                    nextProblemUrl = "/problem";
+                }
+            }
         } catch (error) {
             resultBody.textContent = "서버와 통신할 수 없습니다.";
         }
@@ -496,11 +586,13 @@
     }
 
     confirmButton.addEventListener("click", submitAnswer);
+
     modal.addEventListener("click", (event) => {
         if (event.target === modal) {
             closeModal();
         }
     });
+
     window.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
             closeModal();

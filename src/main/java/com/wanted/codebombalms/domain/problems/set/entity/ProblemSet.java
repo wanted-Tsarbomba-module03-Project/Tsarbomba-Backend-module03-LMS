@@ -3,6 +3,8 @@ package com.wanted.codebombalms.domain.problems.set.entity;
 import com.wanted.codebombalms.domain.problems.category.entity.ProblemCategory;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class ProblemSet {
     @Id
@@ -23,6 +25,8 @@ public class ProblemSet {
     @Column(nullable = false)
     private String status;
 
+    private LocalDateTime createdAt;
+
     protected ProblemSet() {
     }
 
@@ -36,5 +40,17 @@ public class ProblemSet {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }

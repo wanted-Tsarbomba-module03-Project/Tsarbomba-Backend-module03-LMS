@@ -71,6 +71,10 @@ public class Problem {
         return answer;
     }
 
+    public String getExplanation() {
+        return explanation;
+    }
+
     public int getScore() {
         return score;
     }

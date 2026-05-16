@@ -35,7 +35,7 @@ public class ProblemController {
         Long selectedCategoryId = categoryId;
 
         if (selectedCategoryId == null && !categories.isEmpty()) {
-            selectedCategoryId = categories.get(0).getCategoryId();
+            selectedCategoryId = categories.get(0).categoryId();
         }
 
         List<SetResponse> problemSets = List.of();

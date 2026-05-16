@@ -49,4 +49,17 @@ public class ProblemService {
                 )
                 .map(Problem::getProblemId);
     }
+
+    public List<Problem> findActiveProblemEntitiesByProblemSet(Long problemSetId) {
+        return problemRepository.findByProblemSet_ProblemSetIdAndStatusOrderByProblemOrderAsc(
+                problemSetId,
+                "ACTIVE"
+        );
+    }
+
+    public Optional<ProblemResponse> findLastProblem(Long problemSetId) {
+        return problemRepository
+                .findTopByProblemSet_ProblemSetIdAndStatusOrderByProblemOrderDesc(problemSetId, "ACTIVE")
+                .map(ProblemResponse::new);
+    }
 }

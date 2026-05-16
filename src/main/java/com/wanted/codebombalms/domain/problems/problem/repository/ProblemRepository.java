@@ -17,4 +17,14 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
             String status
     );
 
+    List<Problem> findByProblemSet_ProblemSetIdAndStatusOrderByProblemOrderAsc(
+            Long problemSetId,
+            String status
+    );
+
+    Optional<Problem> findTopByProblemSet_ProblemSetIdAndStatusOrderByProblemOrderDesc(
+            Long problemSetId,
+            String status
+    );
+
 }

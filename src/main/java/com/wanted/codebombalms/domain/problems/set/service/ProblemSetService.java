@@ -12,6 +12,7 @@ import com.wanted.codebombalms.domain.problems.set.repository.ProblemSetReposito
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 public class ProblemSetService {
@@ -38,10 +39,11 @@ public class ProblemSetService {
             throw new SetNotFoundException("존재하지 않는 문제 분야입니다.");
         }
 
-        return problemSetRepository
-                .findByCategory_CategoryIdAndStatusOrderByProblemSetIdAsc(categoryId, "ACTIVE")
-                .stream()
-                .map(SetResponse::new)
+        List<ProblemSet> problemSets = problemSetRepository
+                .findByCategory_CategoryIdAndStatusOrderByProblemSetIdAsc(categoryId, "ACTIVE");
+
+        return IntStream.range(0, problemSets.size())
+                .mapToObj(index -> new SetResponse(problemSets.get(index), index + 1))
                 .toList();
     }
 
@@ -50,19 +52,20 @@ public class ProblemSetService {
                 .orElseThrow(() -> new SetNotFoundException("존재하지 않는 문제 세트입니다."));
 
         Integer currentProblemNumber =
-                progressService.findCurrentProblemNumber(userId, problemSetId);
+                progressService.findOrCreateCurrentProblemNumber(userId, problemSet);
+        Boolean isCompleted = progressService.isCompleted(userId, problemSet);
 
-        ProblemResponse currentProblem =
-                problemService.findCurrentProblem(problemSetId, currentProblemNumber);
+        ProblemResponse currentProblem = isCompleted
+                ? problemService.findLastProblem(problemSetId).orElse(null)
+                : problemService.findCurrentProblem(problemSetId, currentProblemNumber);
 
         return new SetEnterResponse(
                 problemSet.getProblemSetId(),
                 problemSet.getTitle(),
+                problemSet.getDescription(),
                 currentProblemNumber,
-                currentProblem.getProblemId(),
-                currentProblem.getTitle(),
-                currentProblem.getContent(),
-                currentProblem.getProblemType()
+                isCompleted,
+                currentProblem
         );
     }
 }

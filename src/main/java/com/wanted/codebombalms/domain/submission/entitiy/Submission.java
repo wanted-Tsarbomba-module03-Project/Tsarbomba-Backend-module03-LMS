@@ -1,4 +1,4 @@
-package com.wanted.codebombalms.domain.problems.submission.entitiy;
+package com.wanted.codebombalms.domain.submission.entitiy;
 
 import com.wanted.codebombalms.domain.problems.problem.entitiy.Problem;
 import jakarta.persistence.*;

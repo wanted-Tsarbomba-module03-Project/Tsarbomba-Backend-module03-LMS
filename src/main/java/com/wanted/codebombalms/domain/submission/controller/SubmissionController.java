@@ -1,8 +1,8 @@
-package com.wanted.codebombalms.domain.problems.submission.controller;
+package com.wanted.codebombalms.domain.submission.controller;
 
-import com.wanted.codebombalms.domain.problems.submission.dto.request.SubmissionRequest;
-import com.wanted.codebombalms.domain.problems.submission.dto.response.SubmissionResponse;
-import com.wanted.codebombalms.domain.problems.submission.service.SubmissionService;
+import com.wanted.codebombalms.domain.submission.dto.request.SubmissionRequest;
+import com.wanted.codebombalms.domain.submission.dto.response.SubmissionResponse;
+import com.wanted.codebombalms.domain.submission.service.SubmissionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
