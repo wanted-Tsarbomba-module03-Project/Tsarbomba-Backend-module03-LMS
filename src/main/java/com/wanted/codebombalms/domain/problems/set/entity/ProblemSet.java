@@ -25,6 +25,15 @@ public class ProblemSet {
     @Column(nullable = false)
     private String status;
 
+    @Column(nullable = false)
+    private Integer totalProblemCount;
+
+    @Column(nullable = false)
+    private Integer completedUserCount;
+
+    @Column(nullable = false)
+    private Integer startedUserCount;
+
     private LocalDateTime createdAt;
 
     protected ProblemSet() {
@@ -48,6 +57,26 @@ public class ProblemSet {
 
     public String getDifficulty() {
         return difficulty;
+    }
+
+    public Integer getTotalProblemCount() {
+        return totalProblemCount;
+    }
+
+    public Integer getCompletedUserCount() {
+        return completedUserCount;
+    }
+
+    public Integer getStartedUserCount() {
+        return startedUserCount;
+    }
+
+    public void increaseStartedUserCount() {
+        this.startedUserCount = this.startedUserCount + 1;
+    }
+
+    public void increaseCompletedUserCount() {
+        this.completedUserCount = this.completedUserCount + 1;
     }
 
     public LocalDateTime getCreatedAt() {

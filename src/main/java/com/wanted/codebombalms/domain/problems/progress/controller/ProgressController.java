@@ -2,7 +2,7 @@ package com.wanted.codebombalms.domain.problems.progress.controller;
 
 import com.wanted.codebombalms.domain.problems.progress.dto.response.ProblemProgressResponse;
 import com.wanted.codebombalms.domain.problems.progress.service.ProgressService;
-import com.wanted.codebombalms.domain.problems.set.dto.response.SetEnterResponse;
+import com.wanted.codebombalms.domain.problems.set.dto.response.ProblemSetEnterResponse;
 import com.wanted.codebombalms.domain.problems.set.service.ProblemSetService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,8 +27,13 @@ public class ProgressController {
             @RequestParam(defaultValue = "1") Long userId,
             Model model
     ) {
-        SetEnterResponse response =
+        ProblemSetEnterResponse response =
                 problemSetService.enterProblemSet(problemSetId, userId);
+
+        if (Boolean.TRUE.equals(response.isCompleted())) {
+            return "redirect:/problem/sets/" + problemSetId + "/result?userId=" + userId;
+        }
+
         ProblemProgressResponse progress =
                 progressService.findProblemSetProgress(problemSetId, userId);
 

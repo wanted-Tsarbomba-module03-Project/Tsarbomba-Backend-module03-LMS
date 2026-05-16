@@ -22,7 +22,10 @@ public class SubmissionQueryService {
                 .findTopByUserIdAndProblem_ProblemIdOrderBySubmittedAtDesc(userId, problemId)
                 .map(submission -> new LatestSubmissionResult(
                         submission.getProblem().getProblemId(),
-                        submission.getCorrect()
+                        submission.getProblem().getProblemOrder(),
+                        submission.getSubmittedAnswer(),
+                        submission.getCorrect(),
+                        submission.getSubmittedAt()
                 ));
     }
 }
