@@ -324,7 +324,7 @@
                             </a>
                         </td>
                         <td>-</td>
-                        <td>-</td>
+                        <td th:text="${problemSet.accuracyRate} + '%'">0.0%</td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(problemSets)}">
                         <td class="empty-message" colspan="4">등록된 문제 세트가 없습니다.</td>

@@ -2,7 +2,7 @@ package com.wanted.codebombalms.domain.problems.problem.controller;
 
 import com.wanted.codebombalms.domain.problems.category.dto.response.CategoryResponse;
 import com.wanted.codebombalms.domain.problems.category.service.ProblemCategoryService;
-import com.wanted.codebombalms.domain.problems.set.dto.response.SetResponse;
+import com.wanted.codebombalms.domain.problems.set.dto.response.ProblemSetListResponse;
 import com.wanted.codebombalms.domain.problems.set.service.ProblemSetService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,7 +38,7 @@ public class ProblemController {
             selectedCategoryId = categories.get(0).categoryId();
         }
 
-        List<SetResponse> problemSets = List.of();
+        List<ProblemSetListResponse> problemSets = List.of();
 
         if (selectedCategoryId != null) {
             problemSets = problemSetService.findActiveSetsByCategory(selectedCategoryId);

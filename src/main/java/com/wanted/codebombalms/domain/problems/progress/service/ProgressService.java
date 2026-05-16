@@ -85,7 +85,13 @@ public class ProgressService {
     public void completeProblemSet(Long userId, ProblemSet problemSet) {
         Progress progress = findOrCreateProgress(userId, problemSet);
 
+        if (Boolean.TRUE.equals(progress.getCompleted())) {
+            return;
+        }
+
         progress.complete();
+        problemSet.increaseCompletedUserCount();
+
         problemProgressRepository.save(progress);
     }
 
@@ -124,7 +130,10 @@ public class ProgressService {
     private Progress findOrCreateProgress(Long userId, ProblemSet problemSet) {
         return problemProgressRepository
                 .findByUserIdAndProblemSet_ProblemSetId(userId, problemSet.getProblemSetId())
-                .orElseGet(() -> problemProgressRepository.save(new Progress(userId, problemSet)));
+                .orElseGet(() -> {
+                    problemSet.increaseStartedUserCount();
+                    return problemProgressRepository.save(new Progress(userId, problemSet));
+                });
     }
 
     private ProblemProgressItemResponse toProgressItem(

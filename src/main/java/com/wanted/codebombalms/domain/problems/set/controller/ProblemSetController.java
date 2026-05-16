@@ -1,7 +1,7 @@
 package com.wanted.codebombalms.domain.problems.set.controller;
 
-import com.wanted.codebombalms.domain.problems.set.dto.response.SetEnterResponse;
-import com.wanted.codebombalms.domain.problems.set.dto.response.SetResponse;
+import com.wanted.codebombalms.domain.problems.set.dto.response.ProblemSetEnterResponse;
+import com.wanted.codebombalms.domain.problems.set.dto.response.ProblemSetListResponse;
 import com.wanted.codebombalms.domain.problems.set.service.ProblemSetService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +18,13 @@ public class ProblemSetController {
     }
 
     @GetMapping("/api/v1/problem-sets")
-    public ResponseEntity<List<SetResponse>> findProblemSets(
+    public ResponseEntity<List<ProblemSetListResponse>> findProblemSets(
             @RequestParam Long categoryId
     ) {
         return ResponseEntity.ok(problemSetService.findActiveSetsByCategory(categoryId));
     }
     @PostMapping("/api/v1/problem-sets/{id}")
-    public ResponseEntity<SetEnterResponse> enterProblemSet(
+    public ResponseEntity<ProblemSetEnterResponse> enterProblemSet(
             @PathVariable Long id,
             @RequestParam Long userId
     ) {
