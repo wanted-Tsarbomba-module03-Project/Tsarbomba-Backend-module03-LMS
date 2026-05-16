@@ -2,21 +2,26 @@ package com.wanted.codebombalms.domain.problems.set.dto.response;
 
 import com.wanted.codebombalms.domain.problems.set.entity.ProblemSet;
 
-public class SetResponse {
+import java.time.LocalDateTime;
 
-    private Long problemSetId;
-    private String title;
-
-    public SetResponse(ProblemSet problemSet) {
-        this.problemSetId = problemSet.getProblemSetId();
-        this.title = problemSet.getTitle();
-    }
-
-    public Long getProblemSetId() {
-        return problemSetId;
-    }
-
-    public String getTitle() {
-        return title;
+public record SetResponse(
+        Long problemSetId,
+        Integer problemNumber,
+        String title,
+        String description,
+        String difficulty,
+        Double accuracyRate,
+        LocalDateTime createdAt
+) {
+    public SetResponse(ProblemSet problemSet, Integer problemNumber) {
+        this(
+                problemSet.getProblemSetId(),
+                problemNumber,
+                problemSet.getTitle(),
+                problemSet.getDescription(),
+                problemSet.getDifficulty(),
+                0.0,
+                problemSet.getCreatedAt()
+        );
     }
 }

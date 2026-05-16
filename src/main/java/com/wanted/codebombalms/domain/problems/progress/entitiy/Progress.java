@@ -22,8 +22,6 @@ public class Progress {
     @Column(nullable = false)
     private Integer currentProblemNumber;
 
-    private Long lastProblemId;
-
     @Column(nullable = false)
     private Boolean isCompleted;
 
@@ -32,6 +30,15 @@ public class Progress {
     private LocalDateTime updatedAt;
 
     protected Progress() {
+    }
+
+    public Progress(Long userId, ProblemSet problemSet) {
+        this.userId = userId;
+        this.problemSet = problemSet;
+        this.currentProblemNumber = 1;
+        this.isCompleted = false;
+        this.completedAt = null;
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Long getProgressId() {
@@ -50,10 +57,6 @@ public class Progress {
         return currentProblemNumber;
     }
 
-    public Long getLastProblemId() {
-        return lastProblemId;
-    }
-
     public Boolean getCompleted() {
         return isCompleted;
     }
@@ -65,9 +68,10 @@ public class Progress {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-    public void openNextProblem(Long solvedProblemId) {
-        this.lastProblemId = solvedProblemId;
+
+    public void openNextProblem() {
         this.currentProblemNumber = this.currentProblemNumber + 1;
+        this.isCompleted = false;
         this.updatedAt = LocalDateTime.now();
     }
 

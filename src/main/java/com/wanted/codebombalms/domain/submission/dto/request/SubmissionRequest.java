@@ -1,4 +1,4 @@
-package com.wanted.codebombalms.domain.problems.submission.dto.request;
+package com.wanted.codebombalms.domain.submission.dto.request;
 
 public class SubmissionRequest {
 
