@@ -42,6 +42,9 @@ public class SecurityConfig {
                         // 인증 불필요
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/users/find-email").permitAll()
+                        // course 및 lecture 테스트
+                        .requestMatchers("/api/v1/courses/**").permitAll()
+                        .requestMatchers("/api/v1/lectures/**").permitAll()
                         // 관리자 전용
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         // 그 외 모두 인증 필요
