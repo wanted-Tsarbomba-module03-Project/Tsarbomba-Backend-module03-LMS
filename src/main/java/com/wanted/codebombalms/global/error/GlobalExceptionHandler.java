@@ -60,4 +60,22 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
+
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ErrorResponse> handleCustomException(
+            CustomException exception,
+            HttpServletRequest request
+    ) {
+        ErrorCode errorCode = exception.getErrorCode();
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                errorCode.getHttpStatus(),
+                errorCode.name(),
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(errorResponse);
+    }
 }
