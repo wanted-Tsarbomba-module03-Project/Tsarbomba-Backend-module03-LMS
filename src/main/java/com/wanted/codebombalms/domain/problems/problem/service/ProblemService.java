@@ -1,0 +1,65 @@
+package com.wanted.codebombalms.domain.problems.problem.service;
+
+import com.wanted.codebombalms.domain.problems.problem.dto.response.ProblemResponse;
+import com.wanted.codebombalms.domain.problems.problem.entitiy.Problem;
+import com.wanted.codebombalms.domain.problems.problem.repository.ProblemRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class ProblemService {
+    private final ProblemRepository problemRepository;
+
+    public ProblemService(ProblemRepository problemRepository) {
+        this.problemRepository = problemRepository;
+    }
+
+    public List<ProblemResponse> findProblemsByCategory(Long categoryId) {
+        return problemRepository
+                .findByProblemSet_Category_CategoryIdAndStatusOrderByProblemOrderAsc(categoryId, "ACTIVE")
+                .stream()
+                .map(ProblemResponse::new)
+                .toList();
+    }
+
+    public ProblemResponse findCurrentProblem(Long problemSetId, Integer currentProblemNumber) {
+        return problemRepository
+                .findByProblemSet_ProblemSetIdAndProblemOrderAndStatus(
+                        problemSetId,
+                        currentProblemNumber,
+                        "ACTIVE"
+                )
+                .map(ProblemResponse::new)
+                .orElseThrow(() -> new RuntimeException("현재 풀 문제가 없습니다."));
+    }
+
+    public Problem findProblemEntity(Long problemId) {
+        return problemRepository.findById(problemId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 문제입니다."));
+    }
+
+    public Optional<Long> findProblemIdByProblemSetAndOrder(Long problemSetId, Integer problemOrder) {
+        return problemRepository
+                .findByProblemSet_ProblemSetIdAndProblemOrderAndStatus(
+                        problemSetId,
+                        problemOrder,
+                        "ACTIVE"
+                )
+                .map(Problem::getProblemId);
+    }
+
+    public List<Problem> findActiveProblemEntitiesByProblemSet(Long problemSetId) {
+        return problemRepository.findByProblemSet_ProblemSetIdAndStatusOrderByProblemOrderAsc(
+                problemSetId,
+                "ACTIVE"
+        );
+    }
+
+    public Optional<ProblemResponse> findLastProblem(Long problemSetId) {
+        return problemRepository
+                .findTopByProblemSet_ProblemSetIdAndStatusOrderByProblemOrderDesc(problemSetId, "ACTIVE")
+                .map(ProblemResponse::new);
+    }
+}

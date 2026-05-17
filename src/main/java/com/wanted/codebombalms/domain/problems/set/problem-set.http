@@ -1,0 +1,13 @@
+@baseUrl = http://localhost:8080
+@categoryId = 1
+@problemSetId = 1
+@userId = 1
+
+### 문제 세트 목록 조회
+GET {{baseUrl}}/api/v1/problem-sets?categoryId={{categoryId}}
+Accept: application/json
+
+### 문제 세트 진입 및 현재 문제 조회
+POST {{baseUrl}}/api/v1/problem-sets/{{problemSetId}}?userId={{userId}}
+Accept: application/json
+

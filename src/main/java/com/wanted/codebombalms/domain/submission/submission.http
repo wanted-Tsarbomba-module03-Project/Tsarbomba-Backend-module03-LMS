@@ -1,0 +1,24 @@
+@baseUrl = http://localhost:8080
+@problemId = 1
+@userId = 1
+
+### 문제 답안 제출 - 정답 예시
+POST {{baseUrl}}/api/v1/problems/{{problemId}}/submissions
+Accept: application/json
+Content-Type: application/json
+
+{
+  "userId": {{userId}},
+  "submittedAnswer": "2"
+}
+
+### 문제 답안 제출 - 오답 예시
+POST {{baseUrl}}/api/v1/problems/{{problemId}}/submissions
+Accept: application/json
+Content-Type: application/json
+
+{
+  "userId": {{userId}},
+  "submittedAnswer": "오답"
+}
+

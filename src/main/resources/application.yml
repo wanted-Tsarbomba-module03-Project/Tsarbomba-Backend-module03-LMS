@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: Code-Bomba-LMS
+  profiles:
+    active: local
